@@ -1,8 +1,10 @@
 ---
 title: "Modul 2"
-author: Allyandaru
-date: 22/10/2020
-output: html_notebook
+author: "Allyandaru"
+date: "22/10/2020"
+output:
+  word_document: default
+  html_notebook: default
 ---
 
 The [R plugin](https://www.jetbrains.com/help/pycharm/r-plugin-support.html) for IntelliJ-based IDEs provides
