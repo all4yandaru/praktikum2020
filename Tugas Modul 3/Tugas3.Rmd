@@ -1,0 +1,78 @@
+---
+title: "Tugas Modul 3"
+author: "Allyandaru / 123180054 / Praktikum Data Science B"
+date: "11/2/2020"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+<br/>
+```{r fungsi str, echo=TRUE}
+library(dslabs)
+data(murders)
+
+```
+
+<br/>
+
+## 1. Fungsi str
+### a. Data murders memiliki 51 data di dalamnya
+
+```{r str}
+length(murders$state)
+```
+<br/>
+
+### b. Data tidak hanya berisi tingkat pembunuhan pada 50 negara bagian dan DC
+
+```{r str data, echo=TRUE}
+str(murders)
+```
+<br/>
+
+### c. Data berisi Nama negara bagian, singkatan dari nama negara bagian, wilayah negara bagian, dan populasi negara bagian serta jumlah total pembunuhan pada tahun 2010.
+
+```{r str data, echo=TRUE}
+```
+
+### d. "str" tidak menunjukkan informasi yang relevan, namun menunjukkan struktur dati suatu data
+```{r str data}
+```
+
+<br/>
+
+## 2. Nama kolom pada data frame adalah `state`, `abb`, `region`, `population`, dan `total`
+```{r str data}
+```
+
+<br/>
+
+## 3. Jenis class objek "a" adalah "character"
+```{r}
+a = murders$abb
+class(a)
+```
+
+<br/>
+
+## 4. Jenis class objek "b" dan "a" adalah "character"
+```{r}
+b <- murders$abb
+class(b)
+```
+
+<br/>
+
+## 5. Jumlah region yang dimiliki dataset
+```{r}
+length(levels(murders$region))
+```
+
+<br/>
+
+## 6. Jumlah state pada setiap region
+```{r}
+table(murders$region)
+```

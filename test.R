@@ -1,3 +1,5 @@
 ## test file
 a <- 5
-a
+class(a)
+library(dslabs)
+data("murders")
