@@ -27,15 +27,17 @@ length(murders$state)
 
 ### b. Data tidak hanya berisi tingkat pembunuhan pada 50 negara bagian dan DC
 
-```{r str data, echo=TRUE}
-str(murders)
+```{r }
+murders
 ```
 <br/>
 
 ### c. Data berisi Nama negara bagian, singkatan dari nama negara bagian, wilayah negara bagian, dan populasi negara bagian serta jumlah total pembunuhan pada tahun 2010.
 
 ```{r str data, echo=TRUE}
+str(murders)
 ```
+<br/>
 
 ### d. "str" tidak menunjukkan informasi yang relevan, namun menunjukkan struktur dati suatu data
 ```{r str data}
