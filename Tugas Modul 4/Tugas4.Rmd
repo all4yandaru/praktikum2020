@@ -1,0 +1,121 @@
+---
+title: "Tugas Modul 4"
+author: "Liek Allyandaru / 123180054 / Praktikum Data Science B"
+date: "11/6/2020"
+output:
+  word_document: default
+  html_document: default
+---
+
+<br/>
+
+```{r setup, echo=TRUE}
+# setup library
+library(dslabs)
+data(murders)
+```
+
+<br/>
+
+## 1. fungsi sort untuk mengurutkan variabel “pop”
+
+```{r echo=TRUE}
+# sorting data
+pop <- sort(murders$population)
+
+# menampilkan data terkecil
+pop[1]
+```
+
+<br/>
+
+## 2. indeks dari data yang memiliki nilai populasi terkecil
+
+```{r echo=TRUE}
+# mengurutkan semua data dan diambil index terkecilnya
+index <- order(murders$population)
+
+# menampilkan index dengan data terkecil
+index[1]
+```
+
+<br/>
+
+## 3. fungsi which.min
+
+```{r echo=TRUE}
+which.min(murders$population)
+```
+
+<br/>
+
+## 4. Negara dengan populasi terkecil
+
+```{r echo=TRUE}
+# mencari pupulasi terkecil
+index_terkecil <- which.min(murders$population)
+
+# menampilkan nama negara dengan index_terkecil
+murders$state[index_terkecil] 
+```
+
+<br/>
+
+## 5. Rank negara berdasarkan populasi
+
+```{r echo=TRUE}
+ranks <- rank(murders$population)
+my_df <- data.frame(state = murders$state, rank = ranks)
+my_df
+
+```
+
+<br/>
+
+## 6. data yang telah diurutkan dari populasi yang paling tidak padat hingga ke yang terpadat.
+
+```{r echo=TRUE}
+# mengurutkan ranks dari terkecil
+ranks <- rank(murders$population)
+sorted_ranks <- sort(ranks)
+index_ranks <- order(ranks)
+
+# mengurutkan states dari yang terkecil
+states <- murders$state[index_ranks]
+
+# membuat data frame
+my_df2 <- data.frame(state = states, rank = sorted_ranks)
+my_df2
+
+```
+
+<br/>
+
+## 7. plot yang memvisualisasikan total pembunuhan terhadap populasi dan mengidentifikasi hubungan antara keduanya.
+
+```{r echo=TRUE}
+total_populasi_juta <- murders$population / 10^6
+total_populasi_juta <- log10(total_populasi_juta)
+total_pembunuhan <- murders$total
+
+plot(total_populasi_juta, total_pembunuhan)
+
+```
+
+<br/>
+
+## 8. Histogram populasi negara bagian
+
+```{r echo=TRUE}
+populasi_juta <- with(murders, murders$population/10^6)
+hist(populasi_juta)
+
+```
+
+<br/>
+
+## 9. boxplot dari populasi negara bagian berdasarkan wilayahnya.
+
+```{r echo=TRUE}
+boxplot((population/10^6)~region, data = murders)
+```

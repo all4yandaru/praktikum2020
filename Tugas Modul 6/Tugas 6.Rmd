@@ -1,0 +1,73 @@
+---
+title: "Tugas Modul 6"
+author: "Liek Allyandaru / 123180054 / Praktikum Data Science B"
+date: "12/3/2020"
+output:
+  word_document: default
+  html_document: default
+---
+
+<br/>
+
+## 1. Meambahkan kolom baru dengan nama ‘rate’
+```{r, echo=TRUE}
+# setup library
+library(dplyr)
+library(dslabs)
+data(murders)
+murders <- mutate(murders, rate = total / population * 100000)
+
+head(murders)
+```
+<br/>
+
+## 2. Fungsi mutate untuk menambahkan kolom baru yang berisi hasil pemeringkatan dari nilai tingkat pembunuhan tertinggi ke terendah
+```{r, echo=TRUE}
+# menambahkan kolom rate
+murders <- mutate(murders, rank = rank(desc(murders$total)))
+
+head(murders)
+```
+<br/>
+
+## 3. Menampilkan nama negara (state) dan singkatan (abb)
+```{r}
+# menampilkan kolom state dan abb
+select(murders, state, abb) %>% head()
+```
+<br/>
+
+## 4. Filter untuk menampilkan 5 negara bagian teratas dengan tingkat pembunuhan tertinggi
+```{r}
+# filter 5 negara pembunuhan tertinggi
+filter(murders, rank <=5)
+```
+<br/>
+
+## 5. Filter untuk hanya menampilkan hasil yang terdiri dari: state, rate, dan peringkatnya
+```{r}
+# mengambil data state, rate, region, dan rank
+table1 <- select(murders, state, rate, region, rank)
+
+# mengambil data dengan rate kurang dari 1 dan regiom=n Northeast atau West
+table1 <- filter(table1, rate < 1, region == "Northeast" | region == "West")
+
+# menampilkan kolom state, rate, dan rank
+select(table1, state, rate, rank) %>% head()
+```
+<br/>
+
+## Operator Pipe
+## 1. Operator pipe untuk membuat data frame baru dengan nama ‘my_states’
+```{r}
+data(murders)
+
+# menambahkan rate, tingkat(rank), kemudian filter, dan select
+my_states <- murders %>% 
+  mutate(rate = total / population * 100000) %>%
+  mutate(rank = rank(desc(total))) %>%
+  filter(rate < 1, region == "Northeast" | region == "West") %>% 
+  select(state, rank, rate)
+
+my_states
+```
