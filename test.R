@@ -1,5 +1,8 @@
 ## test file
-a <- 5
-class(a)
-library(dslabs)
-data("murders")
+compute_s_n <- function(n){
+  x <- 1:n
+  sum(x)
+}
+
+hasil <- compute_s_n(3)
+hasil
