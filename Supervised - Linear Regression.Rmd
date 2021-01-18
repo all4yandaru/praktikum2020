@@ -8,6 +8,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+install.packages("tidymodels")
+install.packages("ranger")
 ```
 <!-- Baris kode di atas merupakan pengaturan untuk dokumen R Markdown dan tidak akan tercetak pada berkas dokumen akhir -->
 
@@ -22,24 +24,24 @@ Namun keragaman dan banyaknya jumlah paket tersebut juga menyebabkan adanya hamb
 Dalam modul ini kita akan memanfaatkan sebuah "sistem" bernama `tidymodels`. `tidymodels` dirancang untuk mengatasi permasalahan yang disebutkan diatas sehingga pengguna dapat melakukan pembelajaran mesin dengan lebih mudah. Silakan Anda aktifkan paket tersebut terlebih dahulu beserta paket `vroom` dan `here`!
 
 ```{r}
-___
-___
-___
+library(tidymodels)
+library(vroom)
+library(here)
 ```
 
 Pada modul ini, kita akan langsung belajar menerapkan data modelling melalui studi kasus. Dalam studi kasus pertama, kita akan melakukan pemodelan dan prediksi untuk nilai ujian nasional tingkat SMP di Kota Bandung. Imporlah "un_smp.csv" yang berada dalam subdirektori "data-raw" dan simpan sebagai obyek R bernama `un_smp`. Selanjutnya jalankan fungsi `glimpse()` pada `un_smp` untuk mempelajari strurukturnya. (Catatan: `glimpse()` adalah fungsi dari paket `dplyr` yang serupa dengan fungsi `str()`)
 
 ```{r}
-___ <- vroom(here("data-raw", "___"))
-glimpse(un_smp)
+un_smp <- vroom(here("data-raw", "un_smp.csv"))
+glimpse(un_smp) # mirip str dari dplyr
 ```
 
 Kita akan mencoba melakukan prediksi nilai ujian mata pelajaran IPA (`ipa`) berdasarkan variabel-variabel lain, yaitu `tahun`, `status`, `jumlah_peserta`, `bahasa_indonesia`, `bahasa_inggris`, dan `matematika`. Sebelum itu kita perlu mengubah tipe variabel `tahun` dari `dbl` menjadi `chr` sebagai berikut, cek hasil perubahannya dengan fungsi `glimpse()`:
 
 ```{r}
-_______ <- un_smp %>% 
-  mutate(tahun = as.character(tahun))
-_______(un_smp)
+un_smp <- un_smp %>% 
+  mutate(tahun = as.character(tahun)) # ngubah tipe data tahun
+glimpse(un_smp)
 ```
 
 Mari kita coba membuat perbandingan nilai ujian IPA antara sekolah negeri dan swasta. Perhatikan kode yang disajikan pada *chunk* berikut:
@@ -83,7 +85,7 @@ memanfaatkan fungsi `initial_split()` dari paket `rsample` untuk melakukan hal t
 
 ```{r}
 set.seed(270719)
-un_smp_split <- initial_split(un_smp)
+un_smp_split <- initial_split(un_smp) # untuk membagi data training dan testing
 un_smp_split
 ```
 
@@ -96,7 +98,7 @@ training(un_smp_split)
 
 **data `testing`**
 ```{r}
-___
+testing(un_smp_split)
 ```
 
 Sebelum membuat pemodelan, biasanya kita akan melakukan pre-processing pada data yang kita miliki terlebih dahulu. Hal tersebut penting dilakukan agar data tersebut dapat memenuhi prasyarat sehingga algoritma dari model dapat berjalan dengan baik dengan performa bagus. Contoh: pada metode regresi linear diharapkan tidak terjadi *multicolinearity* antar variabel prediktor; pada beberapa metode klasifikasi diharapkan agar skala yang digunakan adalah sama untuk semua prediktor; dan lain-lain.
@@ -123,12 +125,12 @@ Tahap selanjutnya adalah kita harus menerapkan "resep" yang telah di buat pada d
 un_smp_training <- un_smp_recipe %>% 
   prep() %>% 
   bake(training(un_smp_split))
-___(un_smp_training)
+glimpse(un_smp_training)
 
 un_smp_testing <- un_smp_recipe %>% 
   prep() %>% 
   bake(testing(un_smp_split))
-___(un_smp_testing)
+glimpse(un_smp_testing)
 ```
 
 Setelah Anda membagi data awal menjadi dua `training` dan `testing` serta menerapkan "resep" pra-pengolahan pada keduanya, sekarang saatnya Anda melakukan pemodelan. Dalam studi kasus ini kita akan menggunakan model Linear Regression
@@ -149,8 +151,25 @@ un_smp_lm %>%
   predict(un_smp_testing) %>% 
   bind_cols(un_smp_testing) %>% 
   metrics(truth = ipa, estimate = .pred)
+
+# root-mean-square error ( RMSE ) makin kecil makin bagus, gamungkin 0
+# koefisien determinasi ( Rsq ) makin besar dapat menjelaskan keseluruhan variasi data / data semakin jelas dan pasti
+# mean absolute error ( MAE ) adalah ukuran umum kesalahan / akurasi
 ```
 
 Kesimpulan apa yang dapat Anda ambil berdasarkan hasil diatas?
 
 > Selamat Anda telah menyelesaikan modul Linear Regression! Silakan jalankan "Ctrl + Shift + K" atau klik tombol "Knit" untuk membuat dokumen final.
+
+```{r}
+un_smp_rf <- rand_forest(mode = "regression") %>%
+  set_engine("ranger") %>%
+  fit(ipa ~ . -nama_sekolah, data = un_smp_training)
+
+un_smp_rf
+
+un_smp_rf %>%
+  predict(un_smp_testing) %>%
+  bind_cols(un_smp_testing) %>%
+  metrics(truth = ipa, estimate = .pred)
+```

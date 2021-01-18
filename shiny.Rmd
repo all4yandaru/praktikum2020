@@ -24,16 +24,16 @@ Pada *chunk* pertama, kita akan mengaktifkan paket-paket yang diperlukan sehingg
 Selanjutnya kita akan membuat dua obyek global lain yaitu `option_station` dan `option_parameter`.
 
 ```{r global}
-library(__________)
-library(__________)
-library(__________)
-library(__________)
-library(__________)
-library(__________)
+library(shiny)
+library(here)
+library(vroom)
+library(dplyr)
+library(ggplot2)
+library(plotly)
 
-___ <- vroom(_____("_____", "___"))
-_____ <- unique(udara_bandung[["station"]])
-___ <- colnames(udara_bandung)[-c(1, 2)]
+udara_bandung <- vroom(here("data-raw", "udara_bandung.csv"))
+option_station <- unique(udara_bandung[["station"]]) # ngambil data2 yg unik
+option_parameter <- colnames(udara_bandung)[-c(1, 2)] # ngambil nama kolom kecuali kolom ke 1 dan 2
 ```
 
 **`ui`**
@@ -42,7 +42,7 @@ Berikutnya kita akan menuliskan kode antarmuka (*front-end*/*user interface*) pa
 
 ```{r ui}
 ui <- fluidPage(
-  title = "_________________________",
+  title = "Air Quality",
   headerPanel("Air Quality of Kota Bandung"),
   sidebarLayout(
     sidebarPanel(
@@ -50,16 +50,17 @@ ui <- fluidPage(
                   label =  "Station",
                   choices = option_station,
                   multiple = TRUE,
-                  selected = option_station[[1]]),
-      ____________________________________",
-                ____________________________",
-                __________),
+                  selected = option_station[1]),
+      selectInput(inputId = "parameter",
+                label = "Parameter",
+                choices = option_parameter,
+                selected = option_parameter[1]),
       textInput(inputId = "parameter_label",
                 label = "Label for parameter",
                 value = ""),
-      ____________________________________",
-                ____________________________",
-                __________),
+      textInput(inputId = "plot_title",
+                label = "Title of Plot",
+                value = ""),
     ),
     mainPanel(
       plotlyOutput(outputId = "aq_plot")
@@ -77,19 +78,19 @@ server <- function(input, output, session) {
   aq_plot <- reactive({
     udara_bandung %>%
       filter(station %in% input$station) %>%
-      ggplot(aes_string(x = "day", y = ___, colour = "station")) +
-      geom____ +
+      ggplot(aes_string(x = "day", y = input$parameter, colour = "station")) +
+      geom_line() +
       scale_x_date(date_breaks = "2 weeks") +
       labs(
         x = "",
         y = ifelse(input$parameter_label == "", input$parameter, input$parameter_label),
         colour = "Station",
-        title = input$___
+        title = input$plot_title
       ) +
       theme_light()
   })
   
-  output$___ <- renderPlotly({
+  output$aq_plot <- renderPlotly({
     ggplotly(aq_plot())
   })
 }
